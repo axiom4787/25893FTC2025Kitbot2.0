@@ -52,13 +52,11 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
  *
  */
 @TeleOp(name = "Robot: Field Relative Mecanum Drive", group = "Robot")
-@Disabled
 public class RobotAutoMecanumFieldRelativeDrive extends OpMode {
     Config config = new Config();
-    // This declares the four motors needed
+
     DcMotor frontLeftDrive, frontRightDrive, backLeftDrive, backRightDrive;
 
-    // This declares the IMU needed to get the current direction the robot is facing
     IMU imu;
 
     @Override

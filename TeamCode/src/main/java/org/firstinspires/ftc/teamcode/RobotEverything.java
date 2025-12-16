@@ -76,7 +76,7 @@ public class RobotEverything extends OpMode {
         backLeftDrive = config.backLeftDrive;
         frontRightDrive = config.frontRightDrive;
         backRightDrive = config.backRightDrive;
-        shooter = config.shooter;
+        shooter = config.shooterLeft;
         intakeLeft = config.intakeLeft;
         intakeRight = config.intakeRight;
 

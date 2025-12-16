@@ -33,6 +33,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 /*
@@ -67,42 +68,29 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 public class BasicShooterOpmode extends LinearOpMode {
     Config config = new Config();
 
-    // Declare OpMode members for each of the 4 motors.
     private ElapsedTime runtime = new ElapsedTime();
-    private DcMotor shooter;
+    private DcMotor shooterLeft, shooterRight, intakeFront;
     private CRServo intakeLeft, intakeRight;
+    private Servo selector;
 
     double shooterStartTime = 9e99;
 
     @Override
     public void runOpMode() {
-        config.initDrive(hardwareMap);
+        config.initShooter(hardwareMap);
         config.initIntake(hardwareMap);
-        shooter = config.shooter;
+
+        shooterLeft = config.shooterLeft;
+        shooterRight = config.shooterRight;
+        shooterLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        shooterRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        intakeFront = config.intakeFront;
+
         intakeLeft = config.intakeLeft;
         intakeRight = config.intakeRight;
 
-        // Initialize the hardware variables. Note that the strings used here must correspond
-        // to the names assigned during the robot configuration step on the DS or RC devices.
-        shooter = hardwareMap.get(DcMotor.class, "shooter");
-        intakeLeft = hardwareMap.get(CRServo.class, "intakeLeft");
-        intakeRight = hardwareMap.get(CRServo.class, "intakeRight");
-
-        // ########################################################################################
-        // !!!            IMPORTANT Drive Information. Test your motor directions.            !!!!!
-        // ########################################################################################
-        // Most robots need the motors on one side to be reversed to drive forward.
-        // The motor reversals shown here are for a "direct drive" robot (the wheels turn the same direction as the motor shaft)
-        // If your robot has additional gear reductions or uses a right-angled drive, it's important to ensure
-        // that your motors are turning in the correct direction.  So, start out with the reversals here, BUT
-        // when you first test your robot, push the left joystick forward and observe the direction the wheels turn.
-        // Reverse the direction (flip FORWARD <-> REVERSE ) of any wheel that runs backward
-        // Keep testing until ALL the wheels move the robot forward when you push the left joystick forward.
-        shooter.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        shooter.setDirection(DcMotor.Direction.FORWARD);
-        intakeLeft.setDirection(DcMotor.Direction.REVERSE);
-        intakeRight.setDirection(DcMotor.Direction.FORWARD);
+        selector = config.selector;
 
         // Wait for the game to start (driver presses START)
         telemetry.addData("Status", "Initialized");
@@ -113,23 +101,21 @@ public class BasicShooterOpmode extends LinearOpMode {
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
-            if (gamepad1.b) {
-                shooterStartTime = runtime.milliseconds();
-            }
+            shooterLeft.setPower(gamepad1.dpad_down ? 0: 0.6);
+            shooterRight.setPower(gamepad1.dpad_down ? 0: 0.6);
 
-            double timeDiff = runtime.milliseconds() - shooterStartTime;
+            intakeFront.setPower(gamepad1.right_trigger > 0.1 ? 0.5 : 0.0);
+            intakeLeft.setPower(gamepad1.left_bumper ? 1 : 0);
+            intakeRight.setPower(gamepad1.right_bumper ? 1 : 0);
 
-            double intakeSpeed = timeDiff > 1000 && timeDiff < 4500 ? 0.15 : 0.0;
-            intakeLeft.setPower(intakeSpeed);
-            intakeRight.setPower(intakeSpeed);
-
-            shooter.setPower(timeDiff < 5000 && timeDiff > 0 ? 0.50 : 0.0);
-
-            runtime.milliseconds();
+            boolean selectorRight = gamepad1.left_trigger > 0.1;
+            selector.setPosition(selectorRight ? 0.6 : 0.3);
 
             telemetry.addData("Status", "Run Time: %s", runtime.toString());
             telemetry.addData("Intake left/Right", "%4.2f, %4.2f", intakeLeft.getPower(), intakeRight.getPower());
-            telemetry.addData("Shooter", "%4.2f", shooter.getPower());
+            telemetry.addData("Shooter", "%4.2f", shooterLeft.getPower());
+            telemetry.addData("Selector position", selector.getPosition());
             telemetry.update();
         }
-    }}
+    }
+}

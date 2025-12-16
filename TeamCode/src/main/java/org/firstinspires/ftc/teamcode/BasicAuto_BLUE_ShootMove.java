@@ -25,7 +25,7 @@ public class BasicAuto_BLUE_ShootMove extends LinearOpMode {
         backLeftDrive = config.backLeftDrive;
         frontRightDrive = config.frontRightDrive;
         backRightDrive = config.backRightDrive;
-        shooter = config.shooter;
+        shooter = config.shooterLeft;
         intakeLeft = config.intakeLeft;
         intakeRight = config.intakeRight;
 
