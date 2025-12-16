@@ -9,31 +9,25 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 @Autonomous(name="Auto BLUE: shoot & move", group="Basic Auto")
 public class BasicAuto_BLUE_ShootMove extends LinearOpMode {
 
+    Config config = new Config();
+
+    ElapsedTime runtime = new ElapsedTime();
+
     DcMotor frontLeftDrive, backLeftDrive, frontRightDrive, backRightDrive;
     DcMotor shooter;
     CRServo intakeLeft, intakeRight;
-    ElapsedTime runtime = new ElapsedTime();
 
     @Override
     public void runOpMode() {
-        frontLeftDrive = hardwareMap.get(DcMotor.class, "leftFront");
-        backLeftDrive = hardwareMap.get(DcMotor.class, "leftBack");
-        frontRightDrive = hardwareMap.get(DcMotor.class, "rightFront");
-        backRightDrive = hardwareMap.get(DcMotor.class, "rightBack");
-
-        frontLeftDrive.setDirection(DcMotor.Direction.FORWARD);
-        backLeftDrive.setDirection(DcMotor.Direction.FORWARD);
-        frontRightDrive.setDirection(DcMotor.Direction.REVERSE);
-        backRightDrive.setDirection(DcMotor.Direction.REVERSE);
-
-        shooter = hardwareMap.get(DcMotor.class, "shooter");
-        intakeLeft = hardwareMap.get(CRServo.class, "intakeLeft");
-        intakeRight = hardwareMap.get(CRServo.class, "intakeRight");
-
-        shooter.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        shooter.setDirection(DcMotor.Direction.FORWARD);
-        intakeLeft.setDirection(DcMotor.Direction.REVERSE);
-        intakeRight.setDirection(DcMotor.Direction.FORWARD);
+        config.initDrive(hardwareMap);
+        config.initIntake(hardwareMap);
+        frontLeftDrive = config.frontLeftDrive;
+        backLeftDrive = config.backLeftDrive;
+        frontRightDrive = config.frontRightDrive;
+        backRightDrive = config.backRightDrive;
+        shooter = config.shooter;
+        intakeLeft = config.intakeLeft;
+        intakeRight = config.intakeRight;
 
         telemetry.addData("Status", "Initialized");
         telemetry.addLine("AUTO - Blue alliance");

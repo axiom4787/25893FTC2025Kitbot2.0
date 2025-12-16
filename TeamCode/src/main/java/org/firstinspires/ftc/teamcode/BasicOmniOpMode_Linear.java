@@ -29,7 +29,6 @@
 
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -65,16 +64,19 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 @TeleOp(name="Basic: Omni Linear OpMode", group="Linear OpMode")
 public class BasicOmniOpMode_Linear extends LinearOpMode {
+    Config config = new Config()
 
     // Declare OpMode members for each of the 4 motors.
     private ElapsedTime runtime = new ElapsedTime();
-    private DcMotor frontLeftDrive = null;
-    private DcMotor backLeftDrive = null;
-    private DcMotor frontRightDrive = null;
-    private DcMotor backRightDrive = null;
+    private DcMotor frontLeftDrive, backLeftDrive, frontRightDrive, backRightDrive;
 
     @Override
     public void runOpMode() {
+        config.initDrive(hardwareMap);
+        frontLeftDrive = config.frontLeftDrive;
+        backLeftDrive = config.backLeftDrive;
+        frontRightDrive = config.frontRightDrive;
+        backRightDrive = config.backRightDrive;
 
         // Initialize the hardware variables. Note that the strings used here must correspond
         // to the names assigned during the robot configuration step on the DS or RC devices.

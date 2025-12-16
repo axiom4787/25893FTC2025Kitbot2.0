@@ -65,17 +65,22 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 @TeleOp(name="Basic: Run intake & shooter", group="Linear OpMode")
 public class BasicShooterOpmode extends LinearOpMode {
+    Config config = new Config();
 
     // Declare OpMode members for each of the 4 motors.
     private ElapsedTime runtime = new ElapsedTime();
-    private DcMotor shooter = null;
-    private CRServo intakeLeft = null;
-    private CRServo intakeRight = null;
+    private DcMotor shooter;
+    private CRServo intakeLeft, intakeRight;
 
     double shooterStartTime = 9e99;
 
     @Override
     public void runOpMode() {
+        config.initDrive(hardwareMap);
+        config.initIntake(hardwareMap);
+        shooter = config.shooter;
+        intakeLeft = config.intakeLeft;
+        intakeRight = config.intakeRight;
 
         // Initialize the hardware variables. Note that the strings used here must correspond
         // to the names assigned during the robot configuration step on the DS or RC devices.

@@ -46,6 +46,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
  */
 @TeleOp(name = "Robot: Everything", group = "Robot")
 public class RobotEverything extends OpMode {
+    Config config = new Config();
     // This declares the four motors needed
     DcMotor frontLeftDrive, frontRightDrive, backLeftDrive, backRightDrive;
 
@@ -69,27 +70,15 @@ public class RobotEverything extends OpMode {
 
     @Override
     public void init() {
-        frontLeftDrive = hardwareMap.get(DcMotor.class, "leftFront");
-        frontRightDrive = hardwareMap.get(DcMotor.class, "rightFront");
-        backLeftDrive = hardwareMap.get(DcMotor.class, "leftBack");
-        backRightDrive = hardwareMap.get(DcMotor.class, "rightBack");
-
-        shooter = hardwareMap.get(DcMotor.class, "shooter");
-        intakeLeft = hardwareMap.get(CRServo.class, "intakeLeft");
-        intakeRight = hardwareMap.get(CRServo.class, "intakeRight");
-
-        shooter.setDirection(DcMotor.Direction.FORWARD);
-        intakeLeft.setDirection(DcMotor.Direction.REVERSE);
-        intakeRight.setDirection(DcMotor.Direction.FORWARD);
-
-        shooter.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        ;
-        // We set the left motors in reverse which is needed for drive trains where the left
-        // motors are opposite to the right ones.
-        frontLeftDrive.setDirection(DcMotor.Direction.FORWARD);
-        frontRightDrive.setDirection(DcMotor.Direction.REVERSE);
-        backLeftDrive.setDirection(DcMotor.Direction.FORWARD);
-        backRightDrive.setDirection(DcMotor.Direction.REVERSE);
+        config.initDrive(hardwareMap);
+        config.initIntake(hardwareMap);
+        frontLeftDrive = config.frontLeftDrive;
+        backLeftDrive = config.backLeftDrive;
+        frontRightDrive = config.frontRightDrive;
+        backRightDrive = config.backRightDrive;
+        shooter = config.shooter;
+        intakeLeft = config.intakeLeft;
+        intakeRight = config.intakeRight;
 
         // This uses RUN_USING_ENCODER to be more accurate.   If you don't have the encoder
         // wires, you should remove these

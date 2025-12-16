@@ -7,21 +7,18 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 @Autonomous(name="Basic autonomous move forward", group="Basic Auto")
 public class BasicAuto_MoveForward extends LinearOpMode {
+    Config config = new Config();
 
     DcMotor frontLeftDrive, backLeftDrive, frontRightDrive, backRightDrive;
     ElapsedTime runtime = new ElapsedTime();
 
     @Override
     public void runOpMode() {
-        frontLeftDrive = hardwareMap.get(DcMotor.class, "leftFront");
-        backLeftDrive = hardwareMap.get(DcMotor.class, "leftBack");
-        frontRightDrive = hardwareMap.get(DcMotor.class, "rightFront");
-        backRightDrive = hardwareMap.get(DcMotor.class, "rightBack");
-
-        frontLeftDrive.setDirection(DcMotor.Direction.FORWARD);
-        backLeftDrive.setDirection(DcMotor.Direction.FORWARD);
-        frontRightDrive.setDirection(DcMotor.Direction.REVERSE);
-        backRightDrive.setDirection(DcMotor.Direction.REVERSE);
+        config.initDrive(hardwareMap);
+        frontLeftDrive = config.frontLeftDrive;
+        backLeftDrive = config.backLeftDrive;
+        frontRightDrive = config.frontRightDrive;
+        backRightDrive = config.backRightDrive;
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
