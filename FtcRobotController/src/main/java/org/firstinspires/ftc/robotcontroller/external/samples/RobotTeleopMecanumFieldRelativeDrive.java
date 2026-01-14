@@ -52,6 +52,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
  *
  */
 @TeleOp(name = "Robot: Field Relative Mecanum Drive", group = "Robot")
+@Disabled
 public class RobotTeleopMecanumFieldRelativeDrive extends OpMode {
     // This declares the four motors needed
     DcMotor frontLeftDrive;
@@ -64,10 +65,10 @@ public class RobotTeleopMecanumFieldRelativeDrive extends OpMode {
 
     @Override
     public void init() {
-        frontLeftDrive = hardwareMap.get(DcMotor.class, "leftFront");
-        frontRightDrive = hardwareMap.get(DcMotor.class, "rightFront");
-        backLeftDrive = hardwareMap.get(DcMotor.class, "leftBack");
-        backRightDrive = hardwareMap.get(DcMotor.class, "rightBack");
+        frontLeftDrive = hardwareMap.get(DcMotor.class, "leftFrontDrive");
+        frontRightDrive = hardwareMap.get(DcMotor.class, "rightFrontDrive");
+        backLeftDrive = hardwareMap.get(DcMotor.class, "leftBackDrive");
+        backRightDrive = hardwareMap.get(DcMotor.class, "rightBackDrive");
 
         // We set the left motors in reverse which is needed for drive trains where the left
         // motors are opposite to the right ones.

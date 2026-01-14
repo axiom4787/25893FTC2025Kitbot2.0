@@ -29,12 +29,15 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import androidx.lifecycle.LifecycleRegistry;
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.IncludedFirmwareFileInfo;
 
 /*
  * This file contains an example of a Linear "OpMode".
@@ -69,11 +72,25 @@ public class BasicShooterOpmode extends LinearOpMode {
     Config config = new Config();
 
     private ElapsedTime runtime = new ElapsedTime();
-    private DcMotor shooterLeft, shooterRight, intakeFront;
-    private CRServo intakeLeft, intakeRight;
+    private DcMotor shooterLeft, shooterRight, floorIntake;
+    private CRServo indexerLeft, indexerRight;
     private Servo selector;
 
+    private boolean shooterOn = true;
+
+    private boolean selectorRight = true;
+
     double shooterStartTime = 9e99;
+
+    private static class ShooterConstants
+    {
+        static float shooterOffPower = 0.0f;
+        static float shooterShootPower = 0.6f;
+        static float intakeOutPower = -0.5f;
+        static float intakeInPower = 0.5f;
+        static float indexerFeedPower = 1f;
+        static float indexerEjectPower = -1f;
+    }
 
     @Override
     public void runOpMode() {
@@ -85,10 +102,10 @@ public class BasicShooterOpmode extends LinearOpMode {
         shooterLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         shooterRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        intakeFront = config.intakeFront;
+        floorIntake = config.intakeFront;
 
-        intakeLeft = config.intakeLeft;
-        intakeRight = config.intakeRight;
+        indexerLeft = config.intakeLeft;
+        indexerRight = config.intakeRight;
 
         selector = config.selector;
 
@@ -99,20 +116,38 @@ public class BasicShooterOpmode extends LinearOpMode {
         waitForStart();
         runtime.reset();
 
+        /**
+         * control scheme
+         * shooter and intake on by default
+         * y - run indexer (feeds into shooter)
+         * left bumper - set selector to left shooter
+         * right bumper - set selector to right shooter
+         * a - reset gyro
+         * b - reverse intake and indexer to eject balls]
+         * up arrow - toggle shooter
+         */
+
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
-            shooterLeft.setPower(gamepad1.dpad_down ? 0: 0.6);
-            shooterRight.setPower(gamepad1.dpad_down ? 0: 0.6);
+            if (gamepad1.dpadUpWasPressed())
+                shooterOn = !shooterOn;
 
-            intakeFront.setPower(gamepad1.right_trigger > 0.1 ? 0.5 : 0.0);
-            intakeLeft.setPower(gamepad1.left_bumper ? 1 : 0);
-            intakeRight.setPower(gamepad1.right_bumper ? 1 : 0);
+            shooterLeft.setPower(shooterOn ? ShooterConstants.shooterShootPower : ShooterConstants.shooterOffPower);
+            shooterRight.setPower(shooterOn ? ShooterConstants.shooterShootPower : ShooterConstants.shooterOffPower);
 
-            boolean selectorRight = gamepad1.left_trigger > 0.1;
+            indexerLeft.setPower(gamepad1.y ? ShooterConstants.indexerFeedPower : (gamepad1.b ? ShooterConstants.indexerEjectPower : 0));
+            indexerRight.setPower(gamepad1.y ? ShooterConstants.indexerFeedPower : (gamepad1.b ? ShooterConstants.indexerEjectPower : 0));
+
+            floorIntake.setPower(gamepad1.b ? ShooterConstants.intakeOutPower : ShooterConstants.intakeInPower);
+
+            if (gamepad1.leftBumperWasPressed())
+                selectorRight = false;
+            else if (gamepad1.rightBumperWasPressed())
+                selectorRight = true;
             selector.setPosition(selectorRight ? 0.6 : 0.3);
 
             telemetry.addData("Status", "Run Time: %s", runtime.toString());
-            telemetry.addData("Intake left/Right", "%4.2f, %4.2f", intakeLeft.getPower(), intakeRight.getPower());
+            telemetry.addData("Intake left/Right", "%4.2f, %4.2f", indexerLeft.getPower(), indexerRight.getPower());
             telemetry.addData("Shooter", "%4.2f", shooterLeft.getPower());
             telemetry.addData("Selector position", selector.getPosition());
             telemetry.update();
